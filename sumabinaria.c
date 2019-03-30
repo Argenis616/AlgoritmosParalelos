@@ -36,21 +36,21 @@ int main(int argc, char **argv)
   int An[tam];
   int Bn[tam];
   int Cn[tam];
-  int Dn[tam];
+  int Dn[tam + 1];
   srand(time(NULL));
-
-  for (int i=0 ;i <poten; i++)
-  {
-    Cn[i] = 0;
-    Dn[i] = 0;
-  }
-
 
   for (int i=0 ;i < poten; i++)
   {
     An[i] = 0 + rand() % (2);
     Bn[i] = 0 + rand() % (2);
     //printf("%i\n",A[i]);
+  }
+
+
+  for (int i=0 ;i <poten; i++)
+  {
+    Cn[i] = 0;
+    Dn[i] = 0;
   }
 //void suma_acarreo(){
   int idHilo;
@@ -66,6 +66,37 @@ int main(int argc, char **argv)
       Cn[idHilo] = An[idHilo] + Bn[idHilo];
     }
   }
+	/* revisar esta idea les explico por aqui por que no se quien vera primero esto y lo intentara
+	* pense en este caso con la idea que teniamos en el lab que es si la suma es A[1111] + B[1001] = 11000
+	*Pero con nuestra idea daria 10010
+	*A demas estoy viendo que estamos haciendo mal algo mas al momento de sumar C con D lo saque para ver si la hacia directa y no la hace.
+	*aparte deberia siempre imprimirnos el arreglo D en 0 siempre ya que es nuestra clausula de salida sin embargo sale diferente de cero
+	*Por lo que veo a lo mucho solo entra una vez al rato le sigo xD
+	if ((An[0] == 1 )&&(Bn[0]==1)){
+		Cn[0]=1;
+		Dn[idHilo-1] =1;
+	}else if((An[idHilo] == 1 )&&(Bn[idHilo]==1)){
+		Cn[idHilo]=0;
+		Dn[idHilo-1] =1;
+	}else{
+	 Cn[idHilo] = An[idHilo] + Bn[idHilo];
+	}
+	*/
+
+	//int idHilo;
+  /*omp_set_num_threads(poten);
+  #pragma omp parallel shared(idHilo)
+  {
+    idHilo = omp_get_thread_num();
+
+    if ((Cn[idHilo] == 1 )&&(Dn[idHilo]==1)){
+      Dn[idHilo] = 0;
+			Dn[idHilo] = 1;
+      Cn[idHilo]=0;
+    }else{
+      Cn[idHilo]  += Dn[idHilo];
+    }
+  }*/
 
 //}
 
@@ -77,11 +108,15 @@ void recursion(){
   {
     idHilo = omp_get_thread_num();
 
-    if ((Cn[idHilo] == 1 )&&(Dn[idHilo+1]==1)){
-      Dn[idHilo-1] = 0;
+    if ((Cn[idHilo] == 1 )&&(Dn[idHilo]==1)){
+			Dn[idHilo] = 0;
+			Dn[idHilo-1] = 1;
       Cn[idHilo]=0;
+			printf("%i\n",Dn[idHilo]);
+			printf("%i\n",Dn[idHilo-1]);
+			printf("%i\n",Cn[idHilo]);
     }else{
-      Cn[idHilo] = Cn[idHilo] + Dn[idHilo+1];
+      Cn[idHilo] += Dn[idHilo];
     }
   }
 }
@@ -94,14 +129,12 @@ void suma_acarreo(){
     }
   }
   if(aux == 1){
-      recursion();
-
+    	recursion();
   }
-
-
 }
 
 suma_acarreo();
+
 for (int i=0 ;i <poten; i++)
 {
   //A[i] = 0 + rand() % (2);
